@@ -31,6 +31,29 @@ long = location_hash.fetch("lng")
 puts "Your coordinates are #{lati}, #{long}."
 
 #weather
+pirate_weather_key = ENV.fetch("PIRATE_WEATHER_KEY")
+pirate_url = "https://api.pirateweather.net/forecast/#{pirate_weather_key}/#{lati},#{long}"
 
-#puts "It is currently #{temp_now}."
-#puts "Next hour"
+pirate_data = HTTP.get(pirate_url)
+
+pirate_parse = JSON.parse(pirate_data)
+
+#current weather
+currently = pirate_parse.fetch("currently")
+
+temp_now = currently.fetch("temperature")
+
+puts "It is currently #{temp_now}°F."
+
+# future forecast
+minutely = pirate_parse.fetch("minutely", false)
+
+if minutely
+  next_hour = minutely.fetch("summary")
+  puts "Next hour: #{next_hour}"
+end
+
+hourly = pirate_parse.fetch("hourly")
+hourly_data = hourly.fetch("data")
+next_twelve_hours = hourly_data[1..12]
+
